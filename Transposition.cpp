@@ -1,45 +1,33 @@
 #include<bits/stdc++.h>
 using namespace std;
-map<int,int> keyMap1;
-map<int,int> keyMap2;
-void setPermutation(string key,int k)
+map<int,int> keymap1;
+map<int,int> keymap2;
+void setPermutations(string key,int k)
 {
-    for(long int i=0;i<key.size();i++)
+    for(int i=0;i<key.size();i++)
     {
-        if(k==1)
-        keyMap1[key[i]]=i;
-        else if(k==2)
-        keyMap2[key[i]]=i;
+        if(k==1)keymap1[key[i]]=i;
+        else keymap2[key[i]]=i;
     }
 }
-string encryptMessage(string msg,string key1,int k)
-{   
-    map<int,int> keyMap;
-    if(k==1)
-    keyMap=keyMap1;
-    else
-    keyMap=keyMap2;
+string encrypt(string plaintext,string key,int k)
+{
+    map<int,int> keymap;
+    if(k==1)keymap=keymap1;
+    else keymap=keymap2;
     int row,col,j;
-    string cipher = "";
-    col = key1.length();      
-    row = msg.length()/col; 
-    if (msg.length() % col)
-        row += 1;
+    col=keymap.size();
+    row=plaintext.size()/col;
+    if(plaintext.size()%col)row++;
     char matrix[row][col];
- 
-    for (int i=0,k=0; i < row; i++)
+    for(int i=0,k=0;i<row;i++)
     {
-        for (int j=0; j<col; )
+        for(int j=0;j<col;)
         {
-            if(msg[k] == '\0')
+            if(plaintext[k]=='\0')matrix[i][j]='_';
+            if(isalpha(plaintext[k]) || plaintext[k]==' ')
             {
-                matrix[i][j] = '_';     
-                j++;
-            }
-             
-            if( isalpha(msg[k]) || msg[k]==' ')
-            { 
-                matrix[i][j] = msg[k];
+                matrix[i][j]=plaintext[k];
                 j++;
             }
             k++;
@@ -53,39 +41,42 @@ string encryptMessage(string msg,string key1,int k)
         }
         cout<<endl;
     }
-    map<int,int> :: iterator ii;
-    for (ii = keyMap.begin(); ii!=keyMap.end();ii++)
+    map<int,int> :: iterator itr;
+    string ciphertext="";
+    for(itr=keymap.begin();itr!=keymap.end();itr++)
     {
-        int j=ii->second;
-        for (int i=0; i<row; i++)
+        int j=itr->second;
+        for(int i=0;i<row;i++)
         {
-            if( isalpha(matrix[i][j]) || matrix[i][j]==' ' || matrix[i][j]=='_')
-                cipher += matrix[i][j];
+            if(isalpha(matrix[i][j]) || matrix[i][j]==' '|| matrix[i][j]=='_')
+            ciphertext+=matrix[i][j];
         }
     }
- 
-    return cipher;
+    return ciphertext;
 }
- 
-// Decryption 
-string decryptMessage(string cipher,string key1)
+string decrypt(string ciphertext,string key,int ke)
 {
-    int col = key1.length();
-    int row = cipher.length()/col;
+    map<int,int> keymap;
+    if(ke==1)keymap=keymap1;
+    else keymap=keymap2;
+    int row,col,j;
+    col=keymap.size();
+    row=ciphertext.size()/col;
+    if(ciphertext.size()%col)row++;
     char cipherMat[row][col];
     for (int j=0,k=0; j<col; j++)
         for (int i=0; i<row; i++)
-            cipherMat[i][j] = cipher[k++];
+            cipherMat[i][j] = ciphertext[k++];
  
     int index = 0;
-    for( map<int,int>::iterator ii=keyMap1.begin(); ii!=keyMap1.end(); ++ii)
+    for( map<int,int>::iterator ii=keymap.begin(); ii!=keymap.end(); ++ii)
         ii->second = index++;
     char decCipher[row][col];
-    map<int,int>::iterator ii=keyMap1.begin();
+    map<int,int>::iterator ii=keymap.begin();
     int k = 0;
-    for (int l=0,j; key1[l]!='\0'; k++)
+    for (int l=0,j; key[l]!='\0'; k++)
     {
-        j = keyMap1[key1[l++]];
+        j = keymap[key[l++]];
         for (int i=0; i<row; i++)
         {
             decCipher[i][k]=cipherMat[i][j];
@@ -102,8 +93,8 @@ string decryptMessage(string cipher,string key1)
     }
     return msg;
 }
-int main(void)
-{   
+int main()
+{
     cout<<"Enter the message you want to encrypt:";
     string msg;
     cin>>msg;
@@ -113,13 +104,13 @@ int main(void)
     cout<<"Enter the second key:";
     string key2;
     cin>>key2;
-    setPermutation(key1,1);
-    setPermutation(key2,2);
-    string cipher1 = encryptMessage(msg,key1,1);
+    setPermutations(key1,1);
+    setPermutations(key2,2);
+    string cipher1 = encrypt(msg,key1,1);
     cout << "Encrypted Message After pass1: " << cipher1 << endl;
-    string cipher2=encryptMessage(cipher1,key2,2);
+    string cipher2=encrypt(cipher1,key2,2);
     cout<<"Encrypted Message After pass2: "<<cipher2<<endl;
-    cout << "Decrypted Message: " << msg/*decryptMessage(cipher1,key1)*/ << endl;
+    cout << "Decrypted Message: " << decrypt(decrypt(cipher2,key2,2),key1,1)<< endl;
  
     return 0;
 }
