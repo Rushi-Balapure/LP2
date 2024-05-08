@@ -1,28 +1,37 @@
+// Online C++ compiler to run C++ program online
 #include <bits/stdc++.h>
 using namespace std;
-class graph 
+class graph
 {
-    int vertices;
-    int n;
-    unordered_map<int,vector<int>>adjlist;
-    public:
-    graph() 
-    {
-        vertices=0;
-    }
-    void addedge(int i,int j) 
-    {
-        adjlist[i].push_back(j);
-        adjlist[j].push_back(i);
-    }
-
-    void input() 
-    {
-        cout<<"Enter a number of vertices :- ";
+  public:
+  int n;
+  unordered_map<int,vector<int>> adjList;
+  graph()
+  {
+      n=0;
+  }
+  void addedge(int i,int j)
+  {
+      adjList[i].push_back(j);
+      adjList[j].push_back(i);
+  }
+  int find(map<int,vector<int>> &level,int id)
+  {
+      for(auto i:level)
+      {
+          for(auto j:i.second)
+          {
+              if(j==id)return i.first;
+          }
+      }
+      return -1;
+  }
+  void input()
+  {
+      cout<<"Enter a number of vertices :- ";
         cin>>n;
-        vertices=n;
         cout<<"Input"<<endl;
-        for (int i=0;i<vertices;i++) 
+        for (int i=0;i<n;i++) 
         {
             int v1;
             cout<<"Enter a vertex :- ";
@@ -37,105 +46,91 @@ class graph
                 cout<<"Enter a adjacent vertex:- ";
                 cin>>v2;
                 addedge(v1,v2);
-                addedge(v2,v1);
                 cout<<endl;
             }
         }
-    }
-
-    int find(map<int,vector<int>>&level,int id) 
-    {
-        for (auto i:level) {
-            for (auto j:i.second) {
-                if (j==id) {
-                    return i.first;
-                }
-            }
-        }
-        return -1;
-    }
-
-    void bfs(int st) 
-    {
-        map<int,int>visited;
-        map<int,vector<int>>level;
-
-        vector<int>ans;
-        queue<int>q;
-
-        q.push(st);
-        visited[st]=1;
-        level[0].push_back(st);
-
-        while (!q.empty()) 
-        {
-            int t=q.front();
-            q.pop();
-            ans.push_back(t);
-            for (auto j:adjlist[t]) 
-            {
-                if (visited.find(j)==visited.end()) 
-                {
-                    visited[j]=1;
-                    int val=find(level,t);
-                    cout<<"visited node is :- "<<j<<" at a level "<<val+1<<endl;
-                    level[val+1].push_back(j);
-                    q.push(j);
-                }
-            }
-        }
-        for (auto i:ans) 
-        {
-            cout<<i<<" ";
-        }
-        cout<<endl;
-        cout<<"Level wise:- "<<endl;
-
-        for (auto i:level) {
-            cout<<"level "<<i.first<<" -> ";
-            for (auto j:i.second) {
-                cout<<j<<" ";
-            }
-            cout<<endl;
-        }
-    }
-    void dfs(int st,vector<int>&ans,map<int,int>&visited,map<int,vector<int>>&level) 
-    {
-        visited[st]=1;
-        ans.push_back(st);
-
-            for (auto u:adjlist[st]) {
-            if (visited.find(u)==visited.end()) {
-                int val=find(level,st);
-                level[val+1].push_back(u);
-                cout<<"Node visited :-"<<u<<", Level :-"<<val+1<<endl;
-                dfs(u,ans,visited,level);
-            }
-        }
-        }
-        void dfs_print(int v) {
-        cout<<endl;
-        map<int,int>visited;
-        vector<int>ans;
-        map<int,vector<int>>level;
-        level[0].push_back(v);
-        dfs(v,ans,visited,level);
-        for (auto i:ans) {
-            cout<<i<<" ";
-        }
-        cout<<endl;
-        cout<<"Level wise:- "<<endl;
-        for (auto i:level) {
-            cout<<"level "<<i.first<<" -> ";
-            for (auto j:i.second) {
-                cout<<j<<" ";
-            }
-            cout<<endl;
-        }
-    }
+  }
+  void bfs(int st)
+  {
+      vector<int> ans;
+      map<int,int> visited;
+      map<int,vector<int>> level;
+      queue<int> q;
+      visited[st]=1;
+      level[0].push_back(st);
+      q.push(st);
+      while(!q.empty())
+      {
+          int t=q.front();
+          q.pop();
+          ans.push_back(t);
+          for(auto j:adjList[t])
+          {
+              if(visited.find(j)==visited.end())
+              {
+                  visited[j]=1;
+                  int val=find(level,t);
+                  cout<<"Visited Node:-"<<j<<" at level:-"<<val+1<<endl;
+                  level[val+1].push_back(j);
+                  q.push(j);
+              }
+          }
+      }
+      cout<<"BFS"<<endl;
+      for(auto i:ans)
+      {
+          cout<<i<<" ";
+      }
+      cout<<endl;
+      cout<<"Level Wise:"<<endl;
+      for(auto i:level)
+      {
+          cout<<"Level "<<i.first<<":-";
+          for(auto j:i.second)cout<<j<<" ";
+          cout<<endl;
+      }
+  }
+  void dfs(int st,vector<int> &ans,map<int,vector<int>> &level,map<int,int> &visited)
+  {
+      visited[st]=1;
+      ans.push_back(st);
+      for(auto j:adjList[st])
+      {
+          if(visited.find(j)==visited.end())
+          {
+              visited[j]=1;
+                  int val=find(level,st);
+                  cout<<"Visited Node:-"<<j<<" at level:-"<<val+1<<endl;
+                  level[val+1].push_back(j);
+                  dfs(j,ans,level,visited);
+          }
+      }
+  }
+  void dfs_print(int st)
+  {
+      vector<int> ans;
+      map<int,int> visited;
+      map<int,vector<int>> level;
+      level[0].push_back(st);
+      dfs(st,ans,level,visited);
+      cout<<"DFS"<<endl;
+      for(auto i:ans)
+      {
+          cout<<i<<" ";
+      }
+      cout<<endl;
+      cout<<"Level Wise:"<<endl;
+      for(auto i:level)
+      {
+          cout<<"Level "<<i.first<<":-";
+          for(auto j:i.second)cout<<j<<" ";
+          cout<<endl;
+      }
+  }
+  
 };
 int main() {
-    graph g;
+     graph g;
 
     int choice;
 
@@ -171,5 +166,6 @@ int main() {
         cin>>c;
     }
 
-return 0;
+    return 0;
+
 }
