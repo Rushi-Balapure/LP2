@@ -24,7 +24,8 @@ string encrypt(string plaintext,string key,int k)
     {
         for(int j=0;j<col;)
         {
-            if(plaintext[k]=='\0')matrix[i][j]='_';
+            if(plaintext[k]=='\0')
+            {matrix[i][j]='_';j++;}
             if(isalpha(plaintext[k]) || plaintext[k]==' ')
             {
                 matrix[i][j]=plaintext[k];
